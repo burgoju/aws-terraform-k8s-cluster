@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cpu-stress-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cpu-stress
+  template:
+    metadata:
+      labels:
+        app: cpu-stress
+    spec:
+      containers:
+      - name: stress
+        image: loadimpact/k6
+        command: ["sh", "-c"]
+        args:
+        - |
+          echo "Starting CPU stress test";
+          while true; do 
+            for i in {1..1000}; do 
+              echo "scale=1000; 4*a(1)" | bc -l > /dev/null;
+            done;
+            sleep 1;
+          done
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "256Mi"
